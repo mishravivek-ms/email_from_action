@@ -1,0 +1,13 @@
+# Python virtual environment
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Local Azure Functions settings (may contain secrets)
+local.settings.json
+
+# Azure Functions publish output
+.python_packages/
+bin/
+obj/
