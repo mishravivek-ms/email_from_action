@@ -1,10 +1,12 @@
 name: Notify on Completion
 
 on:
-  workflow_run:
-    workflows: ["Your Workflow Name"]
-    types:
-      - completed
+  workflow_dispatch:
+    inputs:
+      message:
+        description: "Custom message for email"
+        required: false
+        default: "Workflow triggered manually"
 
 jobs:
   send-email:
@@ -19,8 +21,8 @@ jobs:
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
           subject: "GitHub Action Completed"
-          to: receiver@example.com
-          from: your@email.com
+          to: mishravivek@microsoft.com
+          from: vivekmishra2001@gmail.com
           body: |
             Workflow "${{ github.workflow }}" has completed.
             Status: ${{ github.event.workflow_run.conclusion }}
