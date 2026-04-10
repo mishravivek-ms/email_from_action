@@ -1,20 +1,84 @@
-# Azure Communication Services Email API
+# GitHub Change Notification Email Service
 
-A simple FastAPI service for sending emails using Azure Communication Services (ACS). Designed for deployment to Azure App Service.
+This repository is intended to support a webhook-driven email notification flow using GitHub, Azure App Service, and Azure Communication Services Email.
+
+The main objective of this repo is:
+
+When a user makes some change in a GitHub repository, an email is sent to a customer-defined recipient.
+
+This README focuses on the business workflow, deployment model, webhook configuration, and validation steps needed to achieve that outcome.
 
 ---
 
 ## Table of Contents
 
-1. [Prerequisites](#prerequisites)
-2. [Create Azure Communication Services](#create-azure-communication-services)
-3. [Local Setup](#local-setup)
-4. [Test & Validate Email Flow](#test--validate-email-flow)
-5. [Deploy to Azure App Service](#deploy-to-azure-app-service)
-6. [API Endpoints](#api-endpoints)
-7. [Troubleshooting](#troubleshooting)
+1. [Objective](#objective)
+2. [Expected Output](#expected-output)
+3. [End-to-End Flow](#end-to-end-flow)
+4. [Prerequisites](#prerequisites)
+5. [Create Azure Communication Services](#create-azure-communication-services)
+6. [Local Setup](#local-setup)
+7. [Test & Validate Email Flow](#test--validate-email-flow)
+8. [GitHub Webhook Integration](#github-webhook-integration)
+9. [Deploy to Azure App Service](#deploy-to-azure-app-service)
+10. [API Endpoints](#api-endpoints)
+11. [Troubleshooting](#troubleshooting)
 
 ---
+
+## Objective
+
+The objective of this repository is to enable email notifications from GitHub repository activity.
+
+The intended business flow is:
+
+1. A developer or contributor makes a change in a GitHub repository.
+2. GitHub raises an event for that change.
+3. GitHub sends a webhook request to the deployed API.
+4. The API uses Azure Communication Services to send an email.
+5. The configured customer recipient receives the notification email.
+
+Typical repository changes that may be used as triggers include:
+
+- Push to a branch
+- Pull request created, updated, merged, or closed
+- Issue created or updated
+- Release published
+- Other repository events selected in GitHub webhook settings
+
+## Expected Output
+
+At the end of a successful setup, the expected output is:
+
+- The API is deployed and reachable on Azure App Service.
+- Azure Communication Services Email is configured with a valid sender.
+- A customer-defined email address is configured as the notification recipient.
+- A webhook is created in the GitHub repository.
+- The webhook is configured for the required GitHub events.
+- When a selected repository event occurs, the deployed service receives the request.
+- An email notification is sent to the configured customer recipient.
+
+## End-to-End Flow
+
+The intended end-to-end workflow for this repo is:
+
+```text
+GitHub repository change
+-> GitHub webhook event
+-> Azure App Service hosted API
+-> Azure Communication Services Email
+-> Customer inbox
+```
+
+## Customer-Defined Recipient
+
+The customer-defined recipient is the email address that should receive notifications when GitHub activity happens.
+
+In this solution, that recipient is expected to be configured through:
+
+- `ACS_EMAIL_DEFAULT_TO`
+
+This keeps the notification target simple and makes the flow easy to validate.
 
 ## Prerequisites
 
@@ -260,14 +324,17 @@ curl -X POST "http://localhost:8000/email" \
 
 ## GitHub Webhook Integration
 
-This email API can be triggered by GitHub webhooks to send automated emails on repository events (push, pull request, issues, releases, etc.).
+This repository is intended to use GitHub webhooks as the main trigger for sending notification emails.
+
+When GitHub detects a selected event in the repository, it sends an HTTP request to the deployed service. The service then uses Azure Communication Services Email to notify the customer-defined recipient.
 
 ### How It Works
 
 1. GitHub detects an event (e.g., PR opened, code pushed)
 2. GitHub sends an HTTP POST to your webhook URL
-3. Your service processes the event and sends an email
-4. Email notified developers/team members of the GitHub event
+3. Your service processes the event details
+4. Your service sends an email to the configured customer recipient
+5. The customer receives a notification about the repository change
 
 ### Setting Up GitHub Webhook
 
@@ -306,6 +373,13 @@ Choose which GitHub events trigger the webhook:
 - **All events** — *(everything)*
 
 **Recommended starting point:** Check **Push events** and **Pull requests**
+
+Choose event options based on what the customer expects to be notified about:
+
+- Use `Push events` when every code change should trigger an email.
+- Use `Pull requests` when the customer only wants review and merge workflow updates.
+- Use `Releases` when only release-related changes matter.
+- Use a custom event selection when notifications should be filtered.
 
 #### Step 4: Save the Webhook
 
@@ -909,6 +983,22 @@ emailFunction/
 - [Azure Communication Services Documentation](https://learn.microsoft.com/en-us/azure/communication-services/)
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
 - [Azure CLI Reference](https://learn.microsoft.com/en-us/cli/azure/)
+
+---
+
+## Final Outcome Summary
+
+The main outcome expected from this repository is a working GitHub-to-email notification flow.
+
+In practical terms, that means:
+
+- A change happens in the GitHub repository.
+- GitHub sends a webhook request.
+- The deployed service handles the request.
+- Azure Communication Services sends the email.
+- The customer-defined recipient receives the notification.
+
+If these steps are working end to end, then the repository objective has been achieved.
 
 ---
 
